@@ -1,0 +1,15 @@
+# Check if the file path of ssh keys list is defined.
+if [ -z "${SSH_KEYS_LIST_FILE_PATH}" -o ! -e "${SSH_KEYS_LIST_FILE_PATH}" -o ! -r "${SSH_KEYS_LIST_FILE_PATH}" ]; then
+    echo "The file path of ssh keys list is not defined. If you want to add ssh private keys, please define the environment variable 'SSH_KEYS_LIST_FILE_PATH'."
+    exit 0
+fi
+
+# Read the file of ssh keys list, and add to the keychain.
+cat "${SSH_KEYS_LIST_FILE_PATH}" | while IFS= read -r LINE || [[ -n "${LINE}" ]]
+do
+    if [ -z "${LINE}" -o ! -e "${LINE}" -o ! -r "${LINE}" ]; then
+        continue
+    fi
+    keychain "$LINE"
+done
+. $HOME/.keychain/$HOSTNAME-sh
